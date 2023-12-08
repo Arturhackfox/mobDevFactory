@@ -2,6 +2,7 @@ import UIKit
 
 typealias Emoji = Character
 typealias CarModel = (model: String, isAvailable: Bool?, carPrice: Int)
+typealias Location = (country: String, tickets: Int, apartaments: Int, carOption: CarModel?, isOnCar: Bool)
 
 // CarPark
 let camry = CarModel(model: "Toyota Camry", isAvailable: false, carPrice: 45)
@@ -10,20 +11,20 @@ let prius = CarModel(model: "Toyota Prius ", isAvailable: true, carPrice: 50)
 let mustang: CarModel? = CarModel(model: "Ford Mustang", isAvailable: true, carPrice: 85)
 
 // Netherlands
-let netherlandsCountry = (country: "Netherlands", tickets: 250, apartaments: 50, carOption: camry.isAvailable ?? false ? camry : passat, isOnCar: true)
+let netherlandsCountry: Location = ( "Netherlands", 250, 50, camry.isAvailable ?? false ? camry : passat, true)
 
 // France
-var franceCountry = (country: "France", tickets: 175, apartaments: 35, croissantPrice: 2, carOption: mustang, isOnCar: true)
-// mustang.isAvailable ?? false ? mustang : prius
+var franceCountry: Location = ("France", 175, 35, carOption: mustang, true)
+var croissantPrice = 2
 
 // New York
-let newYorkCountry = (country: "New York", tickets: 333, apartaments: 450, isOnCar: false)
+let newYorkCountry: Location = ("New York", 333, 450, prius, false)
 
 // Japan
-let japanCountry = (country: "Japan", tickets: 250, apartaments: 50, isOnCar: false)
+let japanCountry: Location = ("Japan", 250, 50, nil, false)
 
 // North Korea
-let northKoreaCountry = (country: "North Korea", tickets: 250, apartaments: 50, isOnCar: false)
+let northKoreaCountry: Location = ("North Korea", 250, 50, nil, false)
 
 // Emojies
 let croissant: Emoji = "🥐"
@@ -47,7 +48,7 @@ print("""
 как же не сделать фотку в сторис билетов на фоне аеропорта
 Далее Я уже заюронировал отличную и уюнуют квартирку на air b&b на 7 дней
 Просто посмотри на этот камин!!!!
-Я слышал, что всю голандию можно обьездить за неделю, и для этого я сниму простенькую машинку \(netherlandsCountry.carOption.model) на неделю за \(netherlandsCountry.carOption.carPrice * 7)$ на 7 дней
+Я слышал, что всю голандию можно обьездить за неделю, и для этого я сниму простенькую машинку \(netherlandsCountry.carOption!.model) на неделю за \(netherlandsCountry.carOption!.carPrice * 7)$ на 7 дней
 У нас будет время сделать еще пару фоточек
 """)
 totalApartaments += (netherlandsCountry.apartaments * 7)
@@ -55,7 +56,7 @@ totalPictureTaken += 1
 totalPictureTaken += 1
 totalTickets += netherlandsCountry.tickets
 totalPictureTaken += 2
-totalVehicleExpanses += (netherlandsCountry.carOption.carPrice * 7)
+totalVehicleExpanses += (netherlandsCountry.carOption!.carPrice * 7)
 
 print("самое время посетить вторую на списке страну - \(franceCountry.country)")
 print("билеты удалось словить на скидке за \(franceCountry.tickets)$ .")
@@ -73,7 +74,7 @@ if franceCountry.isOnCar {
     totalPictureTaken += 2
 }
 print("Здесь без круасана \(croissant) никак, купим и еду в Аеропорт")
-totalOther += Double(franceCountry.croissantPrice)
+totalOther += Double(croissantPrice)
 totalTickets += newYorkCountry.tickets
 totalPictureTaken += 1
 
