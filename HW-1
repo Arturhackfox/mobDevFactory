@@ -1,0 +1,102 @@
+import UIKit
+
+typealias Emoji = Character
+
+// Netherlands
+let netherlandsCountry = "Netherlands"
+let netherlandsTickets = 250     // per flight
+let netherlandsApartaments = 50  // per night
+let netherlandsCarPrice = 45     // per day
+
+// France
+let franceCountry = "France"
+let franceTickets = 175
+let franceApartaments = 35
+let franceCarPrice = 55
+let croissantPrice = 2          // per 1 piece
+
+// New York
+let newYorkCountry = "New York"
+let newYorkTickets = 333
+let newYorkApartaments = 450
+let newYorkCountryCarPrice = 120
+
+// Japan
+let japanCountry = "Japan"
+let japanTickets = 250
+let japanApartaments = 50
+let japanCarPrice = 75
+
+// North Korea
+let northKoreaCountry = "North Korea"
+let northKoreaTickets = 250
+let northKoreaApartaments = 50
+let northKoreaCarPrice = 75
+
+// Emojies
+let croissant: Emoji = "🥐"
+let excitedMood: Emoji = "🤠"
+let taxi: Emoji = "🚕"
+
+// Total expanses
+var totalTickets = 0
+var totalApartaments = 0
+var totalVehicleExpanses = 0
+var totalPictureTaken = 0
+var totalOther: Double = 0
+
+print("Привет дружище! Сегодня Я решил уехать с Польши в долгожданное путешествие!\(excitedMood)")
+print("По списку первой страной будет - \(netherlandsCountry)")
+print("Давай сделаем фото моих чемаданов")
+totalPictureTaken += 1
+
+print("""
+перелёт в одну сторону мне выйдет \(netherlandsTickets)$
+как же не сделать фотку в сторис билетов на фоне аеропорта
+Далее Я уже заюронировал отличную и уюнуют квартирку на air b&b на 7 дней
+Просто посмотри на этот камин!!!!
+Я слышал, что всю голандию можно обьездить за неделю, и для этого я сниму простенькую машинку на неделю за \(netherlandsCarPrice)$ на 7 дней
+У нас будет время сделать еще пару фоточек
+""")
+totalApartaments += (netherlandsApartaments * 7)
+totalPictureTaken += 1
+totalPictureTaken += 1
+totalTickets += netherlandsTickets
+totalPictureTaken += 2
+totalVehicleExpanses += (netherlandsCarPrice * 7)
+
+print("самое время посетить вторую на списке страну - \(franceCountry)")
+print("билеты удалось словить на скидке за \(franceTickets)$ .")
+totalTickets += franceTickets
+print("Я буду примерно 2 дня, поэтому снял укромное местечко у Ейфелевой Башни с машиной без крыши)")
+totalVehicleExpanses += (franceCarPrice * 2)
+print("Здесь без круасана \(croissant) никак, купим и еду в Аеропорт")
+totalOther += Double(croissantPrice)
+totalTickets += newYorkTickets
+totalPictureTaken += 1
+
+print("И вот долгожданый \(newYorkCountry)!, и здесь я беру самую видовую квартирку на air b&b за целых \(newYorkApartaments)$ в сутки!")
+totalPictureTaken += 1
+print("Воспользуюсь платным баром и возьму колу с шоколадкой")
+totalOther += (2.50 + Double(4))
+totalPictureTaken += 1
+print("Благо я здесь буду 1 день, поэтому отдохнуть решил на полную!)")
+totalApartaments += newYorkApartaments
+print("Здесь такие пробки \(taxi), что лучше я воспользую метро")
+totalVehicleExpanses += 10
+totalPictureTaken += 1
+
+print("Сразу после \(newYorkCountry)'a я сразу же направлюсь в \(japanCountry)")
+totalTickets += japanTickets
+print("Дай Бог мне одобрят визу!")
+print("Квартиру возьму на 3 дня, без авто")
+totalApartaments += (japanApartaments * 3)
+totalPictureTaken += 1
+
+print("В крайнем случае я направлюсь в \(northKoreaCountry)")
+totalTickets += northKoreaTickets
+print("и крайний день я проведу здесь")
+totalApartaments += northKoreaApartaments
+var summary = Double(totalTickets) + Double(totalApartaments) + Double(totalVehicleExpanses) + totalOther
+
+print("Как итог всё путешествие мне обошлось в \(summary)$ и я успею сделать \(totalPictureTaken) фоток минимум!!")
