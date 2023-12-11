@@ -5,25 +5,20 @@ typealias CarModel = (model: String, isAvailable: Bool?, carPrice: Int)
 typealias Location = (country: String, tickets: Int, apartaments: Int, carOption: CarModel?, isOnCar: Bool)
 
 // CarPark
-let camry = CarModel(model: "Toyota Camry", isAvailable: false, carPrice: 45)
-let passat = CarModel(model: "Volkswagen Passat", isAvailable: true, carPrice: 35)
-let prius = CarModel(model: "Toyota Prius ", isAvailable: true, carPrice: 50)
-let mustang: CarModel? = CarModel(model: "Ford Mustang", isAvailable: true, carPrice: 85)
+let camry:CarModel = ("Toyota Camry", false, 45)
+let passat:CarModel = ("Volkswagen Passat", true, 35)
+let prius:CarModel = ("Toyota Prius ", true, 50)
+let mustang: CarModel? = ("Ford Mustang", true, 85)
 
-// Netherlands
+// Countries
 let netherlandsCountry: Location = ( "Netherlands", 250, 50, camry.isAvailable ?? false ? camry : passat, true)
 
-// France
-var franceCountry: Location = ("France", 175, 35, carOption: mustang, true)
-var croissantPrice = 2
+let franceCountry: Location = ("France", 175, 35, mustang, true)
 
-// New York
 let newYorkCountry: Location = ("New York", 333, 450, prius, false)
 
-// Japan
 let japanCountry: Location = ("Japan", 250, 50, nil, false)
 
-// North Korea
 let northKoreaCountry: Location = ("North Korea", 250, 50, nil, false)
 
 // Emojies
@@ -31,12 +26,19 @@ let croissant: Emoji = "🥐"
 let excitedMood: Emoji = "🤠"
 let taxi: Emoji = "🚕"
 
+//Others
+let croissantPrice = 2
+let chocolateBar = 2.50
+let cola = 4
+
 // Total expanses
 var totalTickets = 0
 var totalApartaments = 0
 var totalVehicleExpanses = 0
 var totalPictureTaken = 0
 var totalOther: Double = 0
+var summary = 0.0
+
 
 print("Привет дружище! Сегодня Я решил уехать с Польши в долгожданное путешествие!\(excitedMood)")
 print("По списку первой страной будет - \(netherlandsCountry.country)")
@@ -61,13 +63,11 @@ totalVehicleExpanses += (netherlandsCountry.carOption!.carPrice * 7)
 print("самое время посетить вторую на списке страну - \(franceCountry.country)")
 print("билеты удалось словить на скидке за \(franceCountry.tickets)$ .")
 totalTickets += franceCountry.tickets
-if franceCountry.isOnCar {
-    if let car = franceCountry.carOption {
+if franceCountry.isOnCar, let car = franceCountry.carOption {
         print("Я буду примерно 2 дня, поэтому снял укромное местечко у Ейфелевой Башни с машиной \(car.model) \(car.model == "Ford Mustang" ? "без крыши" : "")")
         
         totalApartaments += franceCountry.apartaments
         totalVehicleExpanses += (car.carPrice * 2)
-    }
 } else {
     print("Я буду примерно 2 дня, поэтому снял укромное местечко у Ейфелевой Башни, держи пару фоток)")
     totalApartaments += franceCountry.apartaments
@@ -79,12 +79,12 @@ totalTickets += newYorkCountry.tickets
 totalPictureTaken += 1
 
 print("И вот долгожданый \(newYorkCountry.country)!, и здесь я беру самую видовую квартирку на air b&b за целых \(newYorkCountry.apartaments)$ в сутки!")
-totalPictureTaken += 1
 print("Воспользуюсь платным баром и возьму колу с шоколадкой")
-totalOther += (2.50 + Double(4))
-totalPictureTaken += 1
 print("Благо я здесь буду 1 день, поэтому отдохнуть решил на полную!)")
 totalApartaments += newYorkCountry.apartaments
+totalPictureTaken += 1
+totalOther += (chocolateBar + Double(cola))
+totalPictureTaken += 1
 
 switch newYorkCountry.isOnCar {
 case true:
@@ -97,16 +97,25 @@ case false:
 }
 
 print("Сразу после \(newYorkCountry.country)'a я сразу же направлюсь в \(japanCountry.country)")
-totalTickets += japanCountry.tickets
 print("Дай Бог мне одобрят визу!")
 print("Квартиру возьму на 3 дня, без авто")
+totalTickets += japanCountry.tickets
 totalApartaments += (japanCountry.apartaments * 3)
 totalPictureTaken += 1
 
 print("В крайнем случае я направлюсь в \(northKoreaCountry.country)")
-totalTickets += northKoreaCountry.tickets
 print("и крайний день я проведу здесь")
+totalTickets += northKoreaCountry.tickets
 totalApartaments += northKoreaCountry.apartaments
-var summary = Double(totalTickets) + Double(totalApartaments) + Double(totalVehicleExpanses) + totalOther
+ summary = Double(totalTickets) + Double(totalApartaments) + Double(totalVehicleExpanses) + totalOther
 
-print("Как итог всё путешествие мне обошлось в \(summary)$ и я успею сделать \(totalPictureTaken) фоток минимум!!")
+print("""
+      Как итог всё путешествие мне обошлось в \(summary)$
+      На билеты у мень ушло порядка \(totalTickets)
+      На съём жилья ещё + \(totalApartaments)
+      А вот на аренду автомобилей - \(totalVehicleExpanses)
+      Меньше всего заняли расстраты на спонтанные снэки - \(totalOther)
+      и я успел сделать \(totalPictureTaken) фоток!!
+      """)
+
+
