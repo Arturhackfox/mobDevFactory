@@ -38,7 +38,7 @@ for (_, value) in netherlandsDict {
         }
     }
 }
-
+print(destinaitionsArray)
 for (_, value) in franceDict {
     for (key, value) in value {
         if key == "Destination" {
@@ -89,18 +89,17 @@ print("Общее количество пути в путешествии: \(tra
 // Задание со звёздочкой*
 var filteredAllAboveAverage = [Int]()
 print(filteredAllAboveAverage)
-var average = travelSummaryKm / 2
-print("destination array - \(destinaitionsArray)")
+var average = travelSummaryKm / destinaitionsArray.count
 
 for i in destinaitionsArray {
-    for (_, currentValue) in i {
-        if currentValue > average {
-            filteredAllAboveAverage.append(currentValue)
+    for (_, value) in i {
+        if value < average {
+            filteredAllAboveAverage.append(value)
         }
     }
 }
-print(average)
-print(filteredAllAboveAverage)
+
+print(filteredAllAboveAverage.map{ String($0)}.joined(separator: ", "))
 
 // Attractions
 let netherLandsAttractions = [
