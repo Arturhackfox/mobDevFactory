@@ -93,7 +93,7 @@ var average = travelSummaryKm / destinaitionsArray.count
 
 for i in destinaitionsArray {
     for (_, value) in i {
-        if value < average {
+        if value >= average {
             filteredAllAboveAverage.append(value)
         }
     }
