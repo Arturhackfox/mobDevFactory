@@ -1,0 +1,182 @@
+import UIKit
+
+typealias Emoji = Character
+typealias CarModel = (model: String, isAvailable: Bool?, carPrice: Int)
+
+// CarPark
+let camry: CarModel = ("Toyota Camry", false, 45)
+let passat: CarModel = ("Volkswagen Passat", true, 35)
+let prius: CarModel = ("Toyota Prius ", true, 50)
+let mustang: CarModel? = ("Ford Mustang", true, 85)
+
+// Countries and travel expenses
+let netherlands = createCountryDictionarie(countryName: "Netherlands", ticketsPrice: 250, apartamentsPrice: 50)
+let france = createCountryDictionarie(countryName: "France", ticketsPrice: 175, apartamentsPrice: 35)
+let newYork = createCountryDictionarie(countryName: "NewYork", ticketsPrice: 333, apartamentsPrice: 450)
+let japan = createCountryDictionarie(countryName: "Japan", ticketsPrice: 250, apartamentsPrice: 50)
+let northKorea = createCountryDictionarie(countryName: "northKorea", ticketsPrice: 250, apartamentsPrice: 35)
+
+// Countries local vehiecle
+let netherlandsCountryCar = camry.isAvailable ?? false ? camry : passat
+let franceCountryCar = mustang
+let newYorkCountryCar: CarModel? = prius
+let japanCountryCar: CarModel? = nil
+let northKoreaCountryCar: CarModel? = nil
+
+// Emojies
+let croissant: Emoji = "🥐"
+let excitedMood: Emoji = "🤠"
+let taxi: Emoji = "🚕"
+let plane = "✈️"
+var totalTicketsWithEmojie = [String]()
+
+// Other expenses
+let croissantPrice = 2
+let chocolateBar = 2.50
+let cola = 4
+let subwayNyc = 10
+
+var tickets = [Int]()
+var apartaments = [Int]()
+var vehicle = [Int]()
+var picturesTaken = [Int]()
+var otherExpenses = [Double]()
+
+// Total expanses
+var totalTickets = 0
+var totalApartaments = 0
+var totalVehicleExpanses = 0
+var totalPictureTaken = 0
+var totalOther: Double = 0
+var summary = 0.0
+
+tellStory(country: netherlands) { country in
+   """
+  Привет дружище! Сегодня Я решил уехать с Польши в долгожданное путешествие!\(excitedMood)
+  По списку первой страной будет - \(country.keys.first ?? "No info")
+  Давай сделаем фото моих чемаданов
+  """
+}
+picturesTaken.append(1)
+
+tellStory(country: netherlands) { country in
+    """
+    перелёт в одну сторону мне выйдет \(country["Netherlands"]?["Tickets"] ?? 0)$
+    как же не сделать фотку в сторис билетов на фоне аеропорта
+    Далее Я уже заюронировал отличную и уюнуют квартирку на air b&b на 7 дней
+    Просто посмотри на этот камин!!!!
+    Я слышал, что всю голандию можно обьездить за неделю, и для этого я сниму простенькую машинку \(netherlandsCountryCar.model) на неделю за \(netherlandsCountryCar.carPrice * 7)$ на 7 дней
+    У нас будет время сделать еще пару фоточек
+    """
+}
+apartaments.append((netherlands["Netherlands"]?["Apartaments"] ?? 0) * 7)
+picturesTaken.append(6)
+tickets.append(netherlands["Netherlands"]?["Tickets"] ?? 0)
+vehicle.append(netherlandsCountryCar.carPrice * 7)
+
+tellStory(country: france) { country in
+    """
+    самое время посетить вторую на списке страну - \(country.keys.first ?? "No info")
+    билеты удалось словить на скидке за \(country["France"]?["Tickets"] ?? 0)$
+    """
+}
+tickets.append(france["France"]?["Tickets"] ?? 0)
+
+if let car = franceCountryCar {
+    print("Я буду примерно 2 дня, поэтому снял укромное местечко у Ейфелевой Башни с машиной \(car.model) \(car.model == "Ford Mustang" ? "без крыши" : "")")
+    
+    totalApartaments += france["France"]?["Apartaments"] ?? 0
+    totalVehicleExpanses += (car.carPrice * 2)
+} else {
+    print("Я буду примерно 2 дня, поэтому снял укромное местечко у Ейфелевой Башни, держи пару фоток)")
+    totalApartaments += france["France"]?["Apartaments"] ?? 0
+    totalPictureTaken += 2
+}
+tellStory(country: france) { country in
+    "Здесь без круасана \(croissant) никак, купим и еду в Аеропорт"
+}
+otherExpenses.append(Double(croissantPrice))
+picturesTaken.append(1)
+
+tellStory(country: newYork) { country in
+    """
+    И вот долгожданый \(country.keys.first ?? "No info")!, и здесь я беру самую видовую квартирку на air b&b за целых \(country["NewYork"]?["Apartaments"] ?? 0)$ в сутки!
+    Воспользуюсь платным баром и возьму колу с шоколадкой
+    Благо я здесь буду 1 день, поэтому отдохнуть решил на полную!
+    """
+}
+apartaments.append(newYork["NewYork"]?["Apartaments"] ?? 0)
+picturesTaken.append(2)
+tickets.append(newYork["NewYork"]?["Tickets"] ?? 0)
+otherExpenses.append((chocolateBar + Double(cola)))
+
+if let car = newYorkCountryCar {
+    print("А вот и такси \(car.model)\(taxi)!")
+    vehicle.append(car.carPrice)
+} else {
+    print("Здесь такие пробки \(taxi), что лучше я воспользую метро")
+    vehicle.append(subwayNyc)
+    picturesTaken.append(1)
+}
+tellStory(country: newYork) { country in
+    "Сразу после \(country.keys.first ?? "No info")'a"
+}
+tellStory(country: japan) { country in
+    """
+    я сразу же направлюсь в \(japan.keys.first ?? "No info")
+    Дай Бог мне одобрят визу!")
+    Квартиру возьму на 3 дня, без авто
+    """
+}
+tickets.append(japan["Japan"]?["Tickets"] ?? 0)
+apartaments.append((japan["Japan"]?["Apartaments"] ?? 0) * 3)
+picturesTaken.append(1)
+
+tellStory(country: northKorea) { country in
+        """
+        В крайнем случае я направлюсь в \(country.keys.first ?? "No info")
+        и крайний день я проведу здесь
+        """
+}
+
+tickets.append(northKorea["northKorea"]?["Tickets"] ?? 0)
+apartaments.append(northKorea["northKorea"]?["Apartaments"] ?? 0)
+totalTickets = tickets.reduce(0, { $0 + $1 })
+totalApartaments = apartaments.reduce(0, { $0 + $1 })
+totalPictureTaken = picturesTaken.reduce(0, { $0 + $1 })
+totalOther = otherExpenses.reduce(0, { $0 + $1 })
+totalVehicleExpanses = vehicle.reduce(0, { $0 + $1 })
+totalTicketsWithEmojie = tickets.map { String($0) + "$" + " \(plane)"}
+
+summary = sumUpExpenses(tickets: totalTickets, apartaments: totalApartaments, vehicle: totalVehicleExpanses, other: totalOther)
+
+finalExpensesMessage(totalTickets: totalTickets, totalApartaments: totalApartaments, totalPictures: totalPictureTaken, totalOther: totalOther, totalVehicle: totalVehicleExpanses)
+
+// Задание со ⭐️
+func tellStory(country: [String : [String : Int]], message: ([String: [String: Int]]) -> (String)) {
+    let story = message(country)
+    print(story)
+}
+
+// Functions
+func createCountryDictionarie(countryName: String, ticketsPrice: Int, apartamentsPrice: Int) -> [String: [String: Int]] {
+    let newDictionarie = [countryName: ["Tickets": ticketsPrice, "Apartaments": apartamentsPrice]]
+    
+    return newDictionarie
+}
+
+func sumUpExpenses(tickets: Int, apartaments: Int, vehicle: Int, other: Double) -> Double {
+    return Double(tickets + apartaments + vehicle) + other
+}
+
+func finalExpensesMessage(totalTickets: Int, totalApartaments: Int, totalPictures: Int, totalOther: Double, totalVehicle: Int) {
+    print("""
+          Как итог всё путешествие мне обошлось в \(summary)$
+          На билеты у мень ушло порядка \(totalTickets)$
+          В таком порядке - \(totalTicketsWithEmojie.sorted(by: { $0 < $1 }).joined(separator: ", "))
+          На съём жилья ещё + \(totalApartaments)$
+          А вот на аренду автомобилей - \(totalVehicle)$
+          Меньше всего заняли расстраты на спонтанные снэки - \(totalOther)$
+          и я успел сделать \(totalPictures) фоток!!
+          """)
+}
