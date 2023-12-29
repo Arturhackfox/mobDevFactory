@@ -1,0 +1,190 @@
+import UIKit
+
+// TASK 1
+// Общим явялется Средство передвижения
+// Каждый кейс это средство передвижения, под тип
+enum Vehicle {
+    case car(model: String, price: Int)
+    case bike(model: String, price: Int)
+    case subway(price: Int)
+}
+
+// Общим явялеться Затрата
+// Каждый кейс это вид затраты, под тип
+enum Expenses {
+    case flightTickets(amount: Int)
+    case car(amount: Int)
+    case food(amount: Double)
+    case apartaments(amount: Double)
+}
+
+// Общим явялеться Место
+// Каждый кейс это тип места, под тип
+enum Place{
+    case country(name: String)
+    case place(name: String)
+}
+
+// Принцип ООП
+// Я понял так:
+// Есть 3 фундаментальные принципа - НИП (Наследование, Инкапсуляция, Полиморфизм)
+// Наследование - когда мы наследуем функционал базового класса и получаем его свойства и методы.
+// Инкапсуляция - сокрытие свойств и методов объекта от внешнего мира, что бы нельзя было нарушить работу нашего объекта кому либо за пределами того же класса.
+// Полиморфизм - я понял как полиморфизм подтипов, когда можно указать в качестве принимаемого значения в функцию/сторед проперти ТИП - Базового класса или ТИП интерфейса и все ПОД классы и все кто относяться к Интерфейсу(протоколу) смогу быть приняты в качестве Свойства или же принимаемого значения функции.
+
+// SOLID
+// [S] - один обьект, одна задача. Я понял так что один метод/класс/структура/enum - одна задача
+// [O] - принцип открытости закрытости. Я понял что наш объект должен быть закрыт на измененние например при помощи протокола, и открыт на расширение напрмер:
+// Протокол выступает как общий интерфейс для всех кто может проиграть и выключить музыку
+protocol Music {
+    func play()
+    func turnOff()
+}
+
+// 2 объекта которые конформяться к протоколу Music, таким образом они могут быть "сьеденны" любым свойством которое принимает тип :Music
+class MarshallSpeaker: Music {
+    func play() {
+        print("playing music by Marshall Speaker.")
+    }
+    func turnOff() {
+        print("Marshall speaker turned off.")
+    }
+}
+
+class Phone: Music {
+    func play() {
+        print("Playing music through apple music by Phone")
+    }
+    func turnOff() {
+        print("Apple music closed.")
+    }
+}
+
+// так же я могу ДОБАВИТЬ функционал по принципу открытости - закрытости например:
+extension MarshallSpeaker {
+    func volumeUp() {
+        print("Volume maxed out.")
+    }
+}
+
+// или при создании класса, расширю новый функционал
+class LapTop: Music {
+    func play() {
+        print("Playing music through apple music by Phone")
+    }
+    func turnOff() {
+        print("Apple music closed.")
+    }
+    func volumeMax() {
+        print("Volume maxed out.")
+    }
+}
+
+// [L] - Я запомнил как Barbara имела ввиду, что при переиспользовании метода базового класса в под классе ничего не должно поламаться и он должен идеально вписывать в каждый под класс.
+// [I] - interface segregation то и значит что все интерфейсы [протоколы] должны разделяться и хранить в себе не всё в одном а по частям, что бы не было истории где все функции храняться в одном протоколе а я создаю класс который только играет музыку, но по протоколу мне нужно добавить лишние функции которыми я не буду пользоваться - удалить, сохранить..
+// [D] - нужно абстракции указывать в качестве принимаемых значений а не конкретный тип одного класса например:
+// НЕ ПРАВИЛЬНО - УКАЗАТЬ КОНКРЕТНО ЧТО МОЙ manager принимает КОНКРЕТНЫЙ девайс
+class SomeMusicSpeaker {
+    func playMusic() { }
+}
+
+class Manager {
+    var device: SomeMusicSpeaker
+    
+    init(device: SomeMusicSpeaker) {
+        self.device = device
+    }
+    func play() {
+        device.playMusic()
+    }
+}
+
+//  ПРАВИЛЬНО - УКАЗАТЬ АБСТРАКТНОЕ принимаемое значений в device: где я смогу каждый ДЕВАЙС законформить под протокол MusicPlayer и каждый объект под интерфейсом MusicPlayer сможет использоваться внутри класса и его функцией MusicManager.
+protocol MusicPlayer {
+    func play()
+}
+
+class AppleSpeaker: MusicPlayer {
+    func play() {
+        print("Siri playing music.")
+    }
+}
+
+class JBLSpeaker: MusicPlayer {
+    func play() {
+        print("JBL playing music")
+    }
+}
+
+class MusicManager {
+    private(set) var device: MusicPlayer
+    
+    init(device: MusicPlayer) {
+        self.device = device
+    }
+    
+    func playSomeMusic() {
+        device.play()
+    }
+}
+var speakerApple = AppleSpeaker()
+var speakerJbl = JBLSpeaker()
+var manager = MusicManager(device: speakerApple)
+var managerTwo = MusicManager(device: speakerJbl)
+manager.playSomeMusic()     // Siri playing music.
+managerTwo.playSomeMusic()     // JBL playing music
+
+// TASK 2
+enum CalculationType {
+    case multiply, addition, subtraction, division
+}
+
+func makeMathOperation(n1: Int, n2: Int, operationType: CalculationType) -> Int {
+    var res = 0
+    switch operationType {
+    case .addition: res = n1 + n2
+        print("Result of addition \(n1) and \(n2) equals to \(n1 + n2)")
+    case .division where n1 > 0 && n2 > 0 : res = n1 / n2
+        print("Result of dividing \(n1) and \(n2) equals to \(n1 / n2)")
+    case .multiply: res = n1 * n2
+        print("Result of multiplying \(n1) and \(n2) equals to \(n1 * n2)")
+    case .subtraction: res = n1 - n2
+        print("Result of subtracting \(n1) and \(n2) equals to \(n1 - n2)")
+    default: print("Error!")
+    }
+    return res
+}
+
+print(makeMathOperation(n1: 10, n2: 2, operationType: .addition))
+print(makeMathOperation(n1: 10, n2: 2, operationType: .subtraction))
+print(makeMathOperation(n1: 10, n2: 2, operationType: .division))
+print(makeMathOperation(n1: 10, n2: 2, operationType: .multiply))
+print(makeMathOperation(n1: 10, n2: 0, operationType: .division))
+
+// TASK 3
+enum Languages {
+    case english(officialCountry: EnglishOfficial, nearestCountries: [String], shortName: String)
+    case france(countries: [String], shortName: String)
+    case russian(countries: [String], shortName: String)
+    
+    enum EnglishOfficial {
+        case usa, canada, greatBritain
+    }
+    
+    var describe: String {
+        switch self {
+        case let .english(selectedCountry, nearest, shortName):
+            return "English in \(selectedCountry) used actively, it's nearest countries that are using it: \(nearest.joined(separator: ", ")), and short name for it - \(shortName)"
+        case let .france(countries, shortName):
+            return "Francian language actively used in \(countries) it's short name: \(shortName)"
+        case let .russian(countries, shortName):
+            return "Russian language is common in: \(countries.joined(separator: ", ")) and short abreviature is - \(shortName)"
+        }
+    }
+}
+
+var russLanguage: Languages = .russian(countries: ["Russia", "Ukraine","Kazahstan"], shortName: "RU")
+var someLanguage: Languages = .english(officialCountry: .greatBritain, nearestCountries: ["Netherlands", "france", "Poland"], shortName: "Eng")
+someLanguage = .english(officialCountry: .usa, nearestCountries: ["Mexico", "Canada"], shortName: "Eng")
+print(russLanguage.describe)
+print(someLanguage.describe)
