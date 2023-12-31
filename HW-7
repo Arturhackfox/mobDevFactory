@@ -1,0 +1,265 @@
+import UIKit
+
+// Общим явялется Средство передвижения
+// Каждый кейс это средство передвижения, под тип
+enum Vehicle {
+    case car(model: VehicleModel, price: Int)
+    case bike(model: String, price: Int)
+    case subway(price: Int)
+}
+
+// CarsModels
+class VehicleModel {
+    private(set) var name: String
+    private(set) var price: Int
+    private(set) var maxSpeed: Int
+    
+    init(name: String, price: Int, maxSpeed: Int) {
+        self.name = name
+        self.price = price
+        self.maxSpeed = maxSpeed
+    }
+    
+    func drive() {
+        print("Driving")
+    }
+    
+    func stop() {
+            print("Stopped driving")
+        }
+    
+    func emote() {
+        print("✨")
+    }
+}
+class FordMustang: VehicleModel {
+    override func drive() {
+        print("Форд обмалденный! Еду на максимальной скорости \(self.maxSpeed) км в час!!!")
+    }
+    
+    override func stop() {
+        print("Фух, это было круто! Пожалуй припаркуюсь.")
+    }
+    
+    override func emote() {
+        print("🏎️")
+    }
+}
+
+class ToyotaCamryModel: VehicleModel {
+    override func drive() {
+        print("Камри три и пять быстрая! Еду на максимальной скорости \(self.maxSpeed) км в час!!!")
+    }
+    
+    override func stop() {
+        print("Музычку вырубаю и вылязию.")
+    }
+    
+    override func emote() {
+        print("🚘")
+    }
+}
+
+class ToyotaPriusModel: VehicleModel {
+    override func drive() {
+        print("Приус есть приус я что таксист! Еду на максимальной скорости \(self.maxSpeed) км в час!!!")
+    }
+    
+    override func stop() {
+        print("Все мишци затекли, пора парковаться и вылазить.")
+    }
+    
+    override func emote() {
+        print("🚗")
+    }
+}
+
+// CarPark
+var mustangModel = FordMustang(name: "Ford Mustang", price: 85, maxSpeed: 220)
+mustangModel.name
+mustangModel.price
+mustangModel.drive()
+mustangModel.stop()
+mustangModel.emote()
+var camryModel = ToyotaCamryModel(name: "Toyota Camry", price: 45, maxSpeed: 160)
+camryModel.name
+camryModel.price
+camryModel.drive()
+camryModel.stop()
+camryModel.emote()
+var priusModel = ToyotaPriusModel(name: "Toyota Prius", price: 50, maxSpeed: 135)
+priusModel.name
+priusModel.price
+priusModel.drive()
+priusModel.stop()
+priusModel.emote()
+var mustang: Vehicle = .car(model: mustangModel, price: mustangModel.price)
+var camry: Vehicle = .car(model: camryModel, price: camryModel.price)
+
+
+// Общим явялеться Затрата
+// Каждый кейс это вид затраты, под тип
+enum Expenses {
+    case flightTickets(amount: Int)
+    case car(amount: Int)
+    case food(amount: Double)
+    case apartaments(amount: Double)
+}
+
+// Food Model
+struct Food {
+   private(set) var name: String
+   private(set) var price: Double
+   private(set) var isTasty: Bool
+    
+    func describeFood() {
+        print("Пробуем \(self.name) по вкусу - \(isTasty ? "очень вкусно" : "так себе.." )")
+    }
+    
+    mutating func changeTastyPreference(to option: Bool) {
+        self.isTasty = option
+    }
+  
+    func isItWorthThePrice(answer: Bool) {
+        print("Я могу сказать с точностью до 100% что \(name) \(answer ? "оправдал свою стоимость в \(price)$" : "Не оправдал свою стоимость в \(price)$")")
+    }
+}
+
+var croissant = Food(name: "Croissant", price: 2.50, isTasty: true)
+var chocolateBar = Food(name: "Chocolate Bar", price: 4.70, isTasty: false)
+var fruitsBowl = Food(name: "Bowl with fruits", price: 14.99, isTasty: true)
+croissant.describeFood()
+chocolateBar.changeTastyPreference(to: true)
+chocolateBar.isTasty
+fruitsBowl.isItWorthThePrice(answer: true)
+
+// Общим явялеться Место
+// Каждый кейс это тип места, под тип
+enum Place{
+    case country(model: CountryModel)
+    case place(model: PlaceModel)
+}
+
+
+// Country Model
+struct CountryModel {
+    var name: String
+    var ticketPrice: Int
+    var apartamentsPrice: Int
+    
+    func shortCountryReview(itWas: String) {
+        print("Страна \(name) - \(itWas)")
+    }
+    
+    func shortFlightReview(itWas: String) {
+        print("Перелёт выдался - \(itWas)")
+    }
+    
+    func shortApartamentsReview(theyAre: String) {
+        print("Я сделал небольшую ревизию апартаментов и могу сказать следующее они - \(theyAre)")
+    }
+}
+// Place Model
+struct PlaceModel {
+    var name: String
+    var ticketPrice: Int
+    var apartamentsPrice: Int
+    
+    func shortCountryReview(itWas: String) {
+        print("\(name) это место - \(itWas)")
+    }
+    
+    func shortFlightReview(itWas: String) {
+        print("Перелёт выдался - \(itWas)")
+    }
+    
+    func shortApartamentsReview(theyAre: String) {
+        print("Я сделал небольшую ревизию апартаментов и могу сказать следующее они - \(theyAre)")
+    }
+}
+
+var netherlandsModel = CountryModel(name: "Netherlands", ticketPrice: 150, apartamentsPrice: 30)
+var campingInTheForestModel = PlaceModel(name: "Camping in the forest", ticketPrice: 25, apartamentsPrice: 15)
+
+let netherlands: Place = .country(model: netherlandsModel)
+let camping: Place = .place(model: campingInTheForestModel)
+
+// ExpensesManager
+class ExpensesManager {
+    var tickets = [Int]()
+    var apartaments = [Int]()
+    var vehicle = [Int]()
+    var picturesTaken = [Int]()
+    var otherExpenses = [Double]()
+    
+    func sumOfTickets() -> Int {
+        tickets.reduce(0, +)
+    }
+    
+    func sumOfApartaments() -> Int {
+        apartaments.reduce(0, +)
+    }
+    
+    func sumUpExpenses(tickets: Int, apartaments: Int, vehicle: Int, other: Double, currency: String) -> (Double, String) {
+        var finalAmount = 0.0
+        var finalCurrency = ""
+        if currency == "USD" {
+            finalAmount = Double(tickets + apartaments + vehicle) + other
+            finalCurrency = "$"
+        } else if currency == "EUR" {
+            finalAmount = (Double(tickets + apartaments + vehicle) + other) * 0.86
+            finalCurrency = "€"
+        }
+        return (finalAmount, finalCurrency)
+    }
+}
+
+// Story Manager
+class StoryManager {
+     lazy private(set) var randomEmojies: Character = {
+        var randInt = Int.random(in: 1...7)
+         switch randInt {
+         case 1: return "🌽"
+         case 2: return "🐮"
+         case 3: return "⚡️"
+         case 4: return "🧖🏽‍♀️"
+         case 5: return "🍞"
+         case 6: return "📖"
+         case 7: return "🕒"
+         default: return "💽"
+         }
+    }()
+    private var goodEmotion = "👍"
+    private var badEmotion = "👎"
+    
+    static func tellStory(country: CountryModel, vehicle: VehicleModel, message: (CountryModel, VehicleModel) -> (String)) {
+        let story = message(country, vehicle)
+        print(story)
+    }
+    
+    func emoteBad() -> String {
+        badEmotion
+    }
+    
+    func emoteGood() -> String {
+        goodEmotion
+    }
+    
+    func showRandomThought() {
+        print(randomEmojies)
+    }
+}
+let storyManager = StoryManager()
+
+StoryManager.tellStory(country: netherlandsModel, vehicle: camryModel) { netherlands, vehicle in
+    """
+        перелёт в одну сторону мне выйдет \(netherlands.ticketPrice)$ \(storyManager.emoteBad())
+        как же не сделать фотку в сторис билетов на фоне аеропорта
+        Далее Я уже заюронировал отличную и уюнуют квартирку на air b&b на 7 дней
+        Просто посмотри на этот камин!!!!\(storyManager.emoteGood())
+        Я слышал, что всю голандию можно обьездить за неделю, и для этого я сниму простенькую машинку \(vehicle.name) на неделю за \(vehicle.price * 7)$ на 7 дней
+        У нас будет время сделать еще пару фоточек
+        Мне в голову пришла странная мысль - \(storyManager.randomEmojies), законспектирую ка её..
+        """
+}
+
