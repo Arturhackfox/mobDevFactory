@@ -1,0 +1,458 @@
+import UIKit
+
+protocol Dealership {
+    var name: String { get }
+    var showroomCapacity: Int { get }
+    var stockCars: [Car] { get set }
+    var showroomCars: [Car] { get set }
+    var cars: [Car] { get set }
+    
+    func offerAccessories(from array: [Accessorie])
+    func presaleService(for car: Car)
+    func addToShowroom(car: Car) throws
+    func sellCar(_ car: Car)
+    func orderCar()
+}
+
+protocol Car {
+    var serialNum: UUID { get }
+    var model: String { get }
+    var price: Int { get set }
+    var isPresaleServiceDone: Bool { get set }
+    var hasAdditionalGear: Bool { get set }
+    var releaseYear: Int { get }
+    var hasDiscount: Bool { get set }
+    
+    func changePresaleStatus(to: Bool)
+    func makeDiscount(percentage: Double)
+}
+
+protocol SpecialOffer {
+    func addEmergencyPack()
+    func specialOffer(for car: Car) throws
+}
+
+extension SpecialOffer {
+    func addEmergencyPack() {
+        print("Added first aid-kit and fire extinguisher")
+    }
+    func specialOffer(for car: Car) throws {
+        if car.releaseYear < 2024 {
+            print("Your car price is: \(car.price)$")
+            car.makeDiscount(percentage: 15)
+            self.addEmergencyPack()
+            print("We made discount for your car \(car.model) it's price now - \(car.price)$")
+        } else {
+            throw SpecialOfferErrors.latestYear
+        }
+    }
+}
+
+enum SpecialOfferErrors: Error {
+    case latestYear
+}
+
+enum ShowRoomErrors: Error {
+    case alreadyInShowroom
+}
+
+// Car - 1
+class Mercedes: Car {
+    let serialNum = UUID()
+    let model: String
+    var price: Int
+    var isPresaleServiceDone: Bool
+    var hasAdditionalGear: Bool
+    var releaseYear: Int
+    var hasDiscount: Bool
+    
+    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int, hasDiscount: Bool) {
+        self.model = model
+        self.price = price
+        self.isPresaleServiceDone = isPresaleServiceDone
+        self.hasAdditionalGear = hasAdditionalGear
+        self.releaseYear = year
+        self.hasDiscount = hasDiscount
+    }
+    
+    func changePresaleStatus(to newStatus: Bool) {
+        isPresaleServiceDone = newStatus
+        print("presale status changed to - \(newStatus)")
+    }
+    func makeDiscount(percentage: Double) {
+        let originalPrice = price
+        let decimalDiscount = percentage / 100
+        print(decimalDiscount)
+        let discountInUsd = Double(price) * decimalDiscount
+        print(discountInUsd)
+        self.price -= Int(discountInUsd)
+        self.hasDiscount = true
+        print("Original price - \(originalPrice)$ changed to discounted - \(price)$")
+    }
+}
+
+// Car - 2
+class Tesla: Car {
+    let serialNum = UUID()
+    let model: String
+    var price: Int
+    var isPresaleServiceDone: Bool
+    var hasAdditionalGear: Bool
+    var releaseYear: Int
+    var hasDiscount: Bool
+    
+    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int, hasDiscount: Bool) {
+        self.model = model
+        self.price = price
+        self.isPresaleServiceDone = isPresaleServiceDone
+        self.hasAdditionalGear = hasAdditionalGear
+        self.releaseYear = year
+        self.hasDiscount = hasDiscount
+    }
+    
+    func changePresaleStatus(to newStatus: Bool) {
+        isPresaleServiceDone = newStatus
+        print("presale status changed to - \(newStatus)")
+    }
+    func makeDiscount(percentage: Double) {
+        let originalPrice = price
+        let decimalDiscount = percentage / 100
+        print(decimalDiscount)
+        let discountInUsd = Double(price) * decimalDiscount
+        print(discountInUsd)
+        self.price -= Int(discountInUsd)
+        self.hasDiscount = true
+        print("Original price - \(originalPrice)$ changed to discounted - \(price)$")
+    }
+}
+
+// Car - 3
+class Ford: Car {
+    let serialNum = UUID()
+    let model: String
+    var price: Int
+    var isPresaleServiceDone: Bool
+    var hasAdditionalGear: Bool
+    var releaseYear: Int
+    var hasDiscount: Bool
+    
+    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int, hasDiscount: Bool) {
+        self.model = model
+        self.price = price
+        self.isPresaleServiceDone = isPresaleServiceDone
+        self.hasAdditionalGear = hasAdditionalGear
+        self.releaseYear = year
+        self.hasDiscount = hasDiscount
+    }
+    
+    func changePresaleStatus(to newStatus: Bool) {
+        isPresaleServiceDone = newStatus
+        print("presale status changed to - \(newStatus)")
+    }
+    func makeDiscount(percentage: Double) {
+        let originalPrice = price
+        let decimalDiscount = percentage / 100
+        print(decimalDiscount)
+        let discountInUsd = Double(price) * decimalDiscount
+        print(discountInUsd)
+        self.price -= Int(discountInUsd)
+        self.hasDiscount = true
+        print("Original price - \(originalPrice)$ changed to discounted - \(price)$")
+    }
+}
+
+class RandomCar: Car {
+    let serialNum = UUID()
+    let model: String
+    var price: Int
+    var isPresaleServiceDone: Bool
+    var hasAdditionalGear: Bool
+    var releaseYear: Int
+    var hasDiscount: Bool
+    
+    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int, hasDiscount: Bool) {
+        self.model = model
+        self.price = price
+        self.isPresaleServiceDone = isPresaleServiceDone
+        self.hasAdditionalGear = hasAdditionalGear
+        self.releaseYear = year
+        self.hasDiscount = hasDiscount
+    }
+    
+    func changePresaleStatus(to newStatus: Bool) {
+        isPresaleServiceDone = newStatus
+    }
+    func makeDiscount(percentage: Double) {
+        let originalPrice = price
+        let decimalDiscount = percentage / 100
+        print(decimalDiscount)
+        let discountInUsd = Double(price) * decimalDiscount
+        print(discountInUsd)
+        self.price -= Int(discountInUsd)
+        self.hasDiscount = true
+        print("Original price - \(originalPrice)$ changed to discounted - \(price)$")
+    }
+}
+
+// Dealer - 1
+class MercedesDealership: Dealership, SpecialOffer {
+    let name: String
+    let showroomCapacity: Int
+    var stockCars = [Car]()
+    var showroomCars = [Car]()
+    var cars = [Car]()
+    
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+        self.name = name
+        self.showroomCapacity = showroomCapacity
+        self.stockCars = stockCars
+        self.showroomCars = showroomCars
+        self.cars = cars
+    }
+    
+    func offerAccessories(from array: [Accessorie]) {
+        // принимает массив акксесуаров в качестве параметра.
+        // Метод предлагает клиенту купить доп. оборудование.
+        let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
+        print("We offer you some usefull accessories: \(allAccessorieNames)")
+    }
+    func presaleService(for car: Car) {
+        // if car hasn't done presale services -> send it to cars array.
+        if !car.isPresaleServiceDone {
+            car.changePresaleStatus(to: true)
+            cars.append(car)
+            print("Car: \(car.model) has been added to all cars available list.")
+        }
+    }
+    func addToShowroom(car: Car) throws {
+        for (index, currentCar) in stockCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                stockCars.remove(at: index)
+                self.presaleService(for: car)
+                showroomCars.append(car)
+                print("New car: \(car.model) has been added to showroom.")
+            } else {
+                // В салоне уже есть такая машна, ещё одна не нужна там.
+                throw ShowRoomErrors.alreadyInShowroom
+            }
+        }
+    }
+    func sellCar(_ car: Car) {
+        for (index, currentCar) in showroomCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                if currentCar.isPresaleServiceDone {
+                    showroomCars.remove(at: index)
+                    if !currentCar.hasAdditionalGear {
+                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                    }
+                }
+                showroomCars.remove(at: index)
+                print("Car \(car.model) sold.")
+            }
+        }
+    }
+    func orderCar() {
+        let models = ["s63", "s63Amg", "G-Wagon", "e220d", "e220", "s223"].randomElement() ?? "gazel"
+        let randCar = RandomCar(model: models, price: Int.random(in: 60_000...350_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024), hasDiscount: false)
+        print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
+    }
+}
+
+class FordDealership: Dealership, SpecialOffer {
+    let name: String
+    let showroomCapacity: Int
+    var stockCars = [Car]()
+    var showroomCars = [Car]()
+    var cars = [Car]()
+    
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+        self.name = name
+        self.showroomCapacity = showroomCapacity
+        self.stockCars = stockCars
+        self.showroomCars = showroomCars
+        self.cars = cars
+    }
+    
+    func offerAccessories(from array: [Accessorie]) {
+        // принимает массив акксесуаров в качестве параметра.
+        // Метод предлагает клиенту купить доп. оборудование.
+        let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
+        print("We offer you some usefull accessories: \(allAccessorieNames)")
+    }
+    func presaleService(for car: Car) {
+        // if car hasn't done presale services -> send it to cars array.
+        if !car.isPresaleServiceDone {
+            car.changePresaleStatus(to: true)
+            cars.append(car)
+            print("Car: \(car.model) has been added to all cars available list.")
+        }
+    }
+    func addToShowroom(car: Car) throws {
+        for (index, currentCar) in stockCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                stockCars.remove(at: index)
+                self.presaleService(for: car)
+                showroomCars.append(car)
+                print("New car: \(car.model) has been added to showroom.")
+            } else {
+                // В салоне уже есть такая машна, ещё одна не нужна там.
+                throw ShowRoomErrors.alreadyInShowroom
+            }
+        }
+    }
+    func sellCar(_ car: Car) {
+        for (index, currentCar) in showroomCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                if currentCar.isPresaleServiceDone {
+                    showroomCars.remove(at: index)
+                    if !currentCar.hasAdditionalGear {
+                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                    }
+                }
+                showroomCars.remove(at: index)
+                print("Car \(car.model) sold.")
+            }
+        }
+    }
+    func orderCar() {
+        let models = ["Fusion", "Focus", "Mustang", "Mustang-gt"].randomElement() ?? "gazel"
+        let randCar = RandomCar(model: models, price: Int.random(in: 10_000...60_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024), hasDiscount: false)
+        print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
+    }
+}
+
+class TeslaDealership: Dealership, SpecialOffer {
+    let name: String
+    let showroomCapacity: Int
+    var stockCars = [Car]()
+    var showroomCars = [Car]()
+    var cars = [Car]()
+    
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+        self.name = name
+        self.showroomCapacity = showroomCapacity
+        self.stockCars = stockCars
+        self.showroomCars = showroomCars
+        self.cars = cars
+    }
+    
+    func offerAccessories(from array: [Accessorie]) {
+        // принимает массив акксесуаров в качестве параметра.
+        // Метод предлагает клиенту купить доп. оборудование.
+        let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
+        print("We offer you some usefull accessories: \(allAccessorieNames)")
+    }
+    func presaleService(for car: Car) {
+        // if car hasn't done presale services -> send it to cars array.
+        if !car.isPresaleServiceDone {
+            car.changePresaleStatus(to: true)
+            cars.append(car)
+            print("Car: \(car.model) has been added to all cars available list.")
+        }
+    }
+    func addToShowroom(car: Car) throws {
+        for (index, currentCar) in stockCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                stockCars.remove(at: index)
+                self.presaleService(for: car)
+                showroomCars.append(car)
+                print("New car: \(car.model) has been added to showroom.")
+            } else {
+                // В салоне уже есть такая машна, ещё одна не нужна там.
+                throw ShowRoomErrors.alreadyInShowroom
+            }
+        }
+    }
+    func sellCar(_ car: Car) {
+        for (index, currentCar) in showroomCars.enumerated() {
+            if currentCar.serialNum == car.serialNum {
+                if currentCar.isPresaleServiceDone {
+                    showroomCars.remove(at: index)
+                    if !currentCar.hasAdditionalGear {
+                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                    }
+                }
+                showroomCars.remove(at: index)
+                print("Car \(car.model) sold.")
+            }
+        }
+    }
+    func orderCar() {
+        let models = ["Cyber-Truck", "S", "Y", "X"].randomElement() ?? "gazel"
+        let randCar = RandomCar(model: models, price: Int.random(in: 20_000...100_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2020...2024), hasDiscount: false)
+        print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
+    }
+}
+
+struct Accessorie {
+    let name: String
+}
+
+// Car park
+var mercedesAmg63 = Mercedes(model: "S63Amg", price: 120000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2024, hasDiscount: false)
+var mercedesGwagon = Mercedes(model: "G-wagon", price: 180000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2021, hasDiscount: true)
+var teslaCyberTruck = Tesla(model: "Cyber-Truck", price: 80000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2024, hasDiscount: false)
+var teslaModelS = Tesla(model: "Model-S", price: 95000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2023, hasDiscount: false)
+var fordMustangGt = Ford(model: "Mustang-gt", price: 40000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2023, hasDiscount: false)
+var fordFusion = Ford(model: "Fusion", price: 15000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2013, hasDiscount: true)
+
+// Instances of Dealerships
+var mercedesDealer = MercedesDealership(name: "MercedesBenz-Dealership", showroomCapacity: 230, stockCars: [mercedesAmg63, mercedesGwagon], showroomCars: [mercedesAmg63, mercedesGwagon], cars: [mercedesAmg63, mercedesGwagon])
+var fordDealer = FordDealership(name: "Ford-Dealership", showroomCapacity: 50, stockCars: [fordMustangGt, fordFusion], showroomCars: [fordMustangGt, fordFusion], cars: [fordMustangGt, fordFusion])
+var teslaDealer = TeslaDealership(name: "Tesla-Dealership", showroomCapacity: 140, stockCars: [teslaCyberTruck, teslaModelS], showroomCars: [teslaCyberTruck, teslaModelS], cars: [teslaCyberTruck, teslaModelS])
+
+let allCarDealers: [AnyObject] = [mercedesDealer, fordDealer, teslaDealer]
+
+// Slogans
+for car in allCarDealers {
+    switch car {
+    case let mercedesCarDealer as MercedesDealership:
+        print("The best or nothing")
+    case let testlaCarDealer as TeslaDealership:
+        print("Burn rubber, not gasoline")
+    case let fordCarDealer as FordDealership:
+        print("Build Ford Tough")
+    default: print("Unknown car")
+    }
+}
+
+// Проверь все машины в дилерском центре (склад + автосалон), возможно они нуждаются в специальном предложении. Если есть машины со скидкой на складе, нужно перегнать их в автосалон.
+// Задание⭐
+mercedesDealer.showroomCars.forEach { car in
+    if !car.hasDiscount {
+        do {
+            print("You car model - \(car.model)")
+            try mercedesDealer.specialOffer(for: car)
+        } catch SpecialOfferErrors.latestYear {
+            print("Your car \(car.model) is the latest year of manufacture.")
+        } catch {
+            print("Unknown error.")
+        }
+    }
+}
+
+for (index, currentCar) in mercedesDealer.stockCars.enumerated() {
+    if !currentCar.hasDiscount {
+        do {
+            try mercedesDealer.specialOffer(for: currentCar)
+        } catch SpecialOfferErrors.latestYear {
+            print("Your car \(currentCar.model) is the latest year of manufacture.")
+        } catch {
+            print("Unknown error.")
+        }
+    } else { // если есть скидка у машины из гаража
+        do {
+            try mercedesDealer.addToShowroom(car: currentCar)
+        } catch ShowRoomErrors.alreadyInShowroom {
+            print("This car \(currentCar.model) is already in Dealer's showroom with discount.")
+        }
+    }
+}
+
+
+
+
+
+mercedesDealer.orderCar()
+fordDealer.orderCar()
+teslaDealer.orderCar()
