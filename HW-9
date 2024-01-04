@@ -389,19 +389,23 @@ struct Accessorie {
 }
 
 // Car park
-var mercedesAmg63 = Mercedes(model: "S63Amg", price: 120000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2024, hasDiscount: false)
-var mercedesGwagon = Mercedes(model: "G-wagon", price: 180000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2021, hasDiscount: true)
-var teslaCyberTruck = Tesla(model: "Cyber-Truck", price: 80000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2024, hasDiscount: false)
-var teslaModelS = Tesla(model: "Model-S", price: 95000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2023, hasDiscount: false)
-var fordMustangGt = Ford(model: "Mustang-gt", price: 40000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2023, hasDiscount: false)
-var fordFusion = Ford(model: "Fusion", price: 15000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2013, hasDiscount: true)
+let mercedesAmg63 = Mercedes(model: "S63Amg", price: 120000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2024, hasDiscount: false)
+let mercedesGwagon = Mercedes(model: "G-wagon", price: 180000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2021, hasDiscount: true)
+let teslaCyberTruck = Tesla(model: "Cyber-Truck", price: 80000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2024, hasDiscount: false)
+let teslaModelS = Tesla(model: "Model-S", price: 95000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2023, hasDiscount: false)
+let fordMustangGt = Ford(model: "Mustang-gt", price: 40000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2023, hasDiscount: false)
+let fordFusion = Ford(model: "Fusion", price: 15000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2013, hasDiscount: true)
 
 // Instances of Dealerships
-var mercedesDealer = MercedesDealership(name: "MercedesBenz-Dealership", showroomCapacity: 230, stockCars: [mercedesAmg63, mercedesGwagon], showroomCars: [mercedesAmg63, mercedesGwagon], cars: [mercedesAmg63, mercedesGwagon])
-var fordDealer = FordDealership(name: "Ford-Dealership", showroomCapacity: 50, stockCars: [fordMustangGt, fordFusion], showroomCars: [fordMustangGt, fordFusion], cars: [fordMustangGt, fordFusion])
-var teslaDealer = TeslaDealership(name: "Tesla-Dealership", showroomCapacity: 140, stockCars: [teslaCyberTruck, teslaModelS], showroomCars: [teslaCyberTruck, teslaModelS], cars: [teslaCyberTruck, teslaModelS])
+let mercedesDealer = MercedesDealership(name: "MercedesBenz-Dealership", showroomCapacity: 230, stockCars: [mercedesAmg63, mercedesGwagon], showroomCars: [mercedesAmg63, mercedesGwagon], cars: [mercedesAmg63, mercedesGwagon])
+let fordDealer = FordDealership(name: "Ford-Dealership", showroomCapacity: 50, stockCars: [fordMustangGt, fordFusion], showroomCars: [fordMustangGt, fordFusion], cars: [fordMustangGt, fordFusion])
+let teslaDealer = TeslaDealership(name: "Tesla-Dealership", showroomCapacity: 140, stockCars: [teslaCyberTruck, teslaModelS], showroomCars: [teslaCyberTruck, teslaModelS], cars: [teslaCyberTruck, teslaModelS])
 
 let allCarDealers: [AnyObject] = [mercedesDealer, fordDealer, teslaDealer]
+
+// Accessories
+let snowBrush = Accessorie(name: "Snowbrush")
+let tirePump = Accessorie(name: "Tire-pump")
 
 // Slogans
 for car in allCarDealers {
@@ -449,10 +453,3 @@ for (index, currentCar) in mercedesDealer.stockCars.enumerated() {
     }
 }
 
-
-
-
-
-mercedesDealer.orderCar()
-fordDealer.orderCar()
-teslaDealer.orderCar()
