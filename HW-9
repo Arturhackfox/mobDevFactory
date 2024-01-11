@@ -1,4 +1,4 @@
-import UIKit
+import Foundation
 
 protocol Dealership {
     var name: String { get }
@@ -23,7 +23,7 @@ protocol Car {
     var releaseYear: Int { get }
     var hasDiscount: Bool { get set }
     
-    func changePresaleStatus(to: Bool)
+    func changePresaleStatus()
     func makeDiscount(percentage: Double)
 }
 
@@ -36,6 +36,7 @@ extension SpecialOffer {
     func addEmergencyPack() {
         print("Added first aid-kit and fire extinguisher")
     }
+    
     func specialOffer(for car: Car) throws {
         if car.releaseYear < 2024 {
             print("Your car price is: \(car.price)$")
@@ -46,6 +47,7 @@ extension SpecialOffer {
             throw SpecialOfferErrors.latestYear
         }
     }
+    
 }
 
 enum SpecialOfferErrors: Error {
@@ -53,6 +55,9 @@ enum SpecialOfferErrors: Error {
 }
 
 enum ShowRoomErrors: Error {
+    case carAlreadyInShowroom
+    case noSuchCarInStock
+    case noAvailableSpace
     case alreadyInShowroom
 }
 
@@ -64,21 +69,21 @@ class CarModel: Car {
     var isPresaleServiceDone: Bool
     var hasAdditionalGear: Bool
     var releaseYear: Int
-    var hasDiscount: Bool
+    var hasDiscount: Bool = false
     
-    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int, hasDiscount: Bool) {
+    init(model: String, price: Int, isPresaleServiceDone: Bool, hasAdditionalGear: Bool, year: Int) {
         self.model = model
         self.price = price
         self.isPresaleServiceDone = isPresaleServiceDone
         self.hasAdditionalGear = hasAdditionalGear
         self.releaseYear = year
-        self.hasDiscount = hasDiscount
     }
     
-    func changePresaleStatus(to newStatus: Bool) {
-        isPresaleServiceDone = newStatus
-        print("presale status changed to - \(newStatus)")
+    func changePresaleStatus() {
+        isPresaleServiceDone = true
+        print("presale status changed to - \(isPresaleServiceDone)")
     }
+    
     func makeDiscount(percentage: Double) {
         let originalPrice = price
         let decimalDiscount = percentage / 100
@@ -99,12 +104,12 @@ class MercedesDealership: Dealership, SpecialOffer {
     var showroomCars = [Car]()
     var cars = [Car]()
     
-    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car]) {
         self.name = name
         self.showroomCapacity = showroomCapacity
         self.stockCars = stockCars
         self.showroomCars = showroomCars
-        self.cars = cars
+        self.cars = showroomCars + stockCars
     }
     
     func offerAccessories(from array: [Accessorie]) {
@@ -113,53 +118,59 @@ class MercedesDealership: Dealership, SpecialOffer {
         let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
         print("We offer you some usefull accessories: \(allAccessorieNames)")
     }
+    
     func presaleService(for car: Car) {
         // if car hasn't done presale services -> send it to cars array.
         if !car.isPresaleServiceDone {
-            car.changePresaleStatus(to: true)
-            cars.append(car)
+            car.changePresaleStatus()
             print("Car: \(car.model) has been added to all cars available list.")
+        } else {
+            print("Presale service already made")
         }
     }
+    
     func addToShowroom(car: Car) throws {
+        guard showroomCars.count < showroomCapacity else { throw ShowRoomErrors.noAvailableSpace }
+        
+        if showroomCars.contains(where: { $0.serialNum == car.serialNum }) {
+            throw ShowRoomErrors.carAlreadyInShowroom
+        } else {
             for (index, currentCar) in stockCars.enumerated() {
-                // переганяем машину в автосалон на ней нет скидки
-                if currentCar.serialNum == car.serialNum && showroomCars.count < showroomCapacity && !car.hasDiscount {
+                // переганяем машину c гаража в автосалон
+                if currentCar.serialNum == car.serialNum {
                     stockCars.remove(at: index)
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if showroomCars.count < showroomCapacity {
-                    // Такой машины ещё нету, добавляем в гараж
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if car.hasDiscount && currentCar.serialNum == car.serialNum {
-                    // В салоне уже есть такая машна, ещё одна не нужна там.
-                    throw ShowRoomErrors.alreadyInShowroom
-                }
-            }
-        }
-    func sellCar(_ car: Car) {
-        for (index, currentCar) in showroomCars.enumerated() {
-            if currentCar.serialNum == car.serialNum {
-                if currentCar.isPresaleServiceDone {
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
-                    if !currentCar.hasAdditionalGear {
-                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
-                    }
-                } else if !car.isPresaleServiceDone {
-                    self.presaleService(for: car)
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
+                    self.presaleService(for: currentCar)
+                    showroomCars.append(currentCar)
+                    print("New car: \(currentCar.model) has been added to showroom from garage.")
                 }
             }
         }
     }
+    
+    func sellCar(_ car: Car) {
+        guard showroomCars.contains(where: { $0.serialNum == car.serialNum }) else { print("нет такой машины в салоне на продажу")
+            return }
+        
+        for (index, currentCar) in showroomCars.enumerated() where currentCar.serialNum == car.serialNum {
+            if currentCar.isPresaleServiceDone {
+                showroomCars.remove(at: index)
+                cars.removeAll(where: { $0.serialNum == car.serialNum })
+                print("Такая машина есть в салоне и у неё пройденный presale service.")
+                print("Машина - \(car.model) продана.")
+                if !currentCar.hasAdditionalGear {
+                    print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                }
+            } else if !car.isPresaleServiceDone {
+                print("Машина не прошла presale service.")
+            }
+        }
+    }
+    
     func orderCar() {
         let models = ["s63", "s63Amg", "G-Wagon", "e220d", "e220", "s223"].randomElement() ?? "gazel"
-        let randCar = CarModel(model: models, price: Int.random(in: 60_000...350_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024), hasDiscount: false)
+        let randCar = CarModel(model: models, price: Int.random(in: 60_000...350_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024))
+        stockCars.append(randCar)
+        cars.append(randCar)
         print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
     }
 }
@@ -171,12 +182,12 @@ class FordDealership: Dealership, SpecialOffer {
     var showroomCars = [Car]()
     var cars = [Car]()
     
-    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car]) {
         self.name = name
         self.showroomCapacity = showroomCapacity
         self.stockCars = stockCars
         self.showroomCars = showroomCars
-        self.cars = cars
+        self.cars = showroomCars + stockCars
     }
     
     func offerAccessories(from array: [Accessorie]) {
@@ -185,53 +196,59 @@ class FordDealership: Dealership, SpecialOffer {
         let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
         print("We offer you some usefull accessories: \(allAccessorieNames)")
     }
+    
     func presaleService(for car: Car) {
         // if car hasn't done presale services -> send it to cars array.
         if !car.isPresaleServiceDone {
-            car.changePresaleStatus(to: true)
-            cars.append(car)
+            car.changePresaleStatus()
             print("Car: \(car.model) has been added to all cars available list.")
+        } else {
+            print("Presale service already made")
         }
     }
+    
     func addToShowroom(car: Car) throws {
+        guard showroomCars.count < showroomCapacity else { throw ShowRoomErrors.noAvailableSpace }
+        
+        if showroomCars.contains(where: { $0.serialNum == car.serialNum }) {
+            throw ShowRoomErrors.carAlreadyInShowroom
+        } else {
             for (index, currentCar) in stockCars.enumerated() {
-                // переганяем машину в автосалон на ней нет скидки
-                if currentCar.serialNum == car.serialNum && showroomCars.count < showroomCapacity && !car.hasDiscount {
+                // переганяем машину c гаража в автосалон
+                if currentCar.serialNum == car.serialNum {
                     stockCars.remove(at: index)
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if showroomCars.count < showroomCapacity {
-                    // Такой машины ещё нету, добавляем в гараж
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if car.hasDiscount && currentCar.serialNum == car.serialNum {
-                    // В салоне уже есть такая машна, ещё одна не нужна там.
-                    throw ShowRoomErrors.alreadyInShowroom
-                }
-            }
-        }
-    func sellCar(_ car: Car) {
-        for (index, currentCar) in showroomCars.enumerated() {
-            if currentCar.serialNum == car.serialNum {
-                if currentCar.isPresaleServiceDone {
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
-                    if !currentCar.hasAdditionalGear {
-                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
-                    }
-                } else if !car.isPresaleServiceDone {
-                    self.presaleService(for: car)
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
+                    self.presaleService(for: currentCar)
+                    showroomCars.append(currentCar)
+                    print("New car: \(currentCar.model) has been added to showroom from garage.")
                 }
             }
         }
     }
+    
+    func sellCar(_ car: Car) {
+        guard showroomCars.contains(where: { $0.serialNum == car.serialNum }) else { print("нет такой машины в салоне на продажу")
+            return }
+        
+        for (index, currentCar) in showroomCars.enumerated() where currentCar.serialNum == car.serialNum {
+            if currentCar.isPresaleServiceDone {
+                showroomCars.remove(at: index)
+                cars.removeAll(where: { $0.serialNum == car.serialNum })
+                print("Такая машина есть в салоне и у неё пройденный presale service.")
+                print("Машина - \(car.model) продана.")
+                if !currentCar.hasAdditionalGear {
+                    print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                }
+            } else if !car.isPresaleServiceDone {
+                print("Машина не прошла presale service.")
+            }
+        }
+    }
+    
     func orderCar() {
         let models = ["Fusion", "Focus", "Mustang", "Mustang-gt"].randomElement() ?? "gazel"
-        let randCar = CarModel(model: models, price: Int.random(in: 10_000...60_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024), hasDiscount: false)
+        let randCar = CarModel(model: models, price: Int.random(in: 10_000...60_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2000...2024))
+        stockCars.append(randCar)
+        cars.append(randCar)
         print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
     }
 }
@@ -243,12 +260,12 @@ class TeslaDealership: Dealership, SpecialOffer {
     var showroomCars = [Car]()
     var cars = [Car]()
     
-    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car], cars: [Car]) {
+    init(name: String, showroomCapacity: Int, stockCars: [Car], showroomCars: [Car]) {
         self.name = name
         self.showroomCapacity = showroomCapacity
         self.stockCars = stockCars
         self.showroomCars = showroomCars
-        self.cars = cars
+        self.cars = showroomCars + stockCars
     }
     
     func offerAccessories(from array: [Accessorie]) {
@@ -257,53 +274,59 @@ class TeslaDealership: Dealership, SpecialOffer {
         let allAccessorieNames = array.map { $0.name }.joined(separator: ", ")
         print("We offer you some usefull accessories: \(allAccessorieNames)")
     }
+    
     func presaleService(for car: Car) {
         // if car hasn't done presale services -> send it to cars array.
         if !car.isPresaleServiceDone {
-            car.changePresaleStatus(to: true)
-            cars.append(car)
+            car.changePresaleStatus()
             print("Car: \(car.model) has been added to all cars available list.")
+        } else {
+            print("Presale service already made")
         }
     }
+    
     func addToShowroom(car: Car) throws {
+        guard showroomCars.count < showroomCapacity else { throw ShowRoomErrors.noAvailableSpace }
+        
+        if showroomCars.contains(where: { $0.serialNum == car.serialNum }) {
+            throw ShowRoomErrors.carAlreadyInShowroom
+        } else {
             for (index, currentCar) in stockCars.enumerated() {
-                // переганяем машину в автосалон на ней нет скидки
-                if currentCar.serialNum == car.serialNum && showroomCars.count < showroomCapacity && !car.hasDiscount {
+                // переганяем машину c гаража в автосалон
+                if currentCar.serialNum == car.serialNum {
                     stockCars.remove(at: index)
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if showroomCars.count < showroomCapacity {
-                    // Такой машины ещё нету, добавляем в гараж
-                    self.presaleService(for: car)
-                    showroomCars.append(car)
-                    print("New car: \(car.model) has been added to showroom.")
-                } else if car.hasDiscount && currentCar.serialNum == car.serialNum {
-                    // В салоне уже есть такая машна, ещё одна не нужна там.
-                    throw ShowRoomErrors.alreadyInShowroom
-                }
-            }
-        }
-    func sellCar(_ car: Car) {
-        for (index, currentCar) in showroomCars.enumerated() {
-            if currentCar.serialNum == car.serialNum {
-                if currentCar.isPresaleServiceDone {
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
-                    if !currentCar.hasAdditionalGear {
-                        print("I can offer you additional gear for your car, do you want to add it to the cart ?")
-                    }
-                } else if !car.isPresaleServiceDone {
-                    self.presaleService(for: car)
-                    showroomCars.remove(at: index)
-                    print("Car \(car.model) sold.")
+                    self.presaleService(for: currentCar)
+                    showroomCars.append(currentCar)
+                    print("New car: \(currentCar.model) has been added to showroom from garage.")
                 }
             }
         }
     }
+    
+    func sellCar(_ car: Car) {
+        guard showroomCars.contains(where: { $0.serialNum == car.serialNum }) else { print("нет такой машины в салоне на продажу")
+            return }
+        
+        for (index, currentCar) in showroomCars.enumerated() where currentCar.serialNum == car.serialNum {
+            if currentCar.isPresaleServiceDone {
+                showroomCars.remove(at: index)
+                cars.removeAll(where: { $0.serialNum == car.serialNum })
+                print("Такая машина есть в салоне и у неё пройденный presale service.")
+                print("Машина - \(car.model) продана.")
+                if !currentCar.hasAdditionalGear {
+                    print("I can offer you additional gear for your car, do you want to add it to the cart ?")
+                }
+            } else if !car.isPresaleServiceDone {
+                print("Машина не прошла presale service.")
+            }
+        }
+    }
+    
     func orderCar() {
         let models = ["Cyber-Truck", "S", "Y", "X"].randomElement() ?? "gazel"
-        let randCar = CarModel(model: models, price: Int.random(in: 20_000...100_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2020...2024), hasDiscount: false)
+        let randCar = CarModel(model: models, price: Int.random(in: 20_000...100_000), isPresaleServiceDone: false, hasAdditionalGear: false, year: Int.random(in: 2020...2024))
+        stockCars.append(randCar)
+        cars.append(randCar)
         print("Ordered new car. Model: \(randCar.model), it's price \(randCar.price)$")
     }
 }
@@ -313,17 +336,17 @@ struct Accessorie {
 }
 
 // Car park
-let mercedesAmg63 = CarModel(model: "S63Amg", price: 120000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2024, hasDiscount: false)
-let mercedesGwagon = CarModel(model: "G-wagon", price: 180000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2021, hasDiscount: true)
-let teslaCyberTruck = CarModel(model: "Cyber-Truck", price: 80000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2024, hasDiscount: false)
-let teslaModelS = CarModel(model: "Model-S", price: 95000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2023, hasDiscount: false)
-let fordMustangGt = CarModel(model: "Mustang-gt", price: 40000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2023, hasDiscount: false)
-let fordFusion = CarModel(model: "Fusion", price: 15000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2013, hasDiscount: true)
+let mercedesAmg63 = CarModel(model: "S63Amg", price: 120000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2024)
+let mercedesGwagon = CarModel(model: "G-wagon", price: 180000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2021)
+let teslaCyberTruck = CarModel(model: "Cyber-Truck", price: 80000, isPresaleServiceDone: true, hasAdditionalGear: true, year: 2024)
+let teslaModelS = CarModel(model: "Model-S", price: 95000, isPresaleServiceDone: true, hasAdditionalGear: false, year: 2023)
+let fordMustangGt = CarModel(model: "Mustang-gt", price: 40000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2023)
+let fordFusion = CarModel(model: "Fusion", price: 15000, isPresaleServiceDone: false, hasAdditionalGear: false, year: 2013)
 
 // Instances of Dealerships
-let mercedesDealer = MercedesDealership(name: "MercedesBenz-Dealership", showroomCapacity: 230, stockCars: [mercedesAmg63], showroomCars: [ mercedesGwagon], cars: [mercedesAmg63, mercedesGwagon])
-let fordDealer = FordDealership(name: "Ford-Dealership", showroomCapacity: 50, stockCars: [fordFusion], showroomCars: [fordMustangGt], cars: [fordMustangGt, fordFusion])
-let teslaDealer = TeslaDealership(name: "Tesla-Dealership", showroomCapacity: 140, stockCars: [teslaModelS], showroomCars: [teslaCyberTruck], cars: [teslaCyberTruck, teslaModelS])
+let mercedesDealer = MercedesDealership(name: "MercedesBenz-Dealership", showroomCapacity: 230, stockCars: [mercedesAmg63], showroomCars: [ mercedesGwagon])
+let fordDealer = FordDealership(name: "Ford-Dealership", showroomCapacity: 50, stockCars: [fordFusion], showroomCars: [fordMustangGt])
+let teslaDealer = TeslaDealership(name: "Tesla-Dealership", showroomCapacity: 140, stockCars: [teslaModelS], showroomCars: [teslaCyberTruck])
 
 let allCarDealers: [AnyObject] = [mercedesDealer, fordDealer, teslaDealer]
 
@@ -376,3 +399,17 @@ for (_, currentCar) in mercedesDealer.stockCars.enumerated() {
         }
     }
 }
+
+
+// Tests
+teslaDealer.addToShowroom(car: teslaModelS)
+do {
+    try teslaDealer.addToShowroom(car: teslaModelS)
+} catch {
+    print("Такая машина уже есть в шоуруме")
+}
+teslaDealer.sellCar(teslaModelS)
+teslaDealer.sellCar(fordFusion)
+teslaDealer.orderCar()
+teslaDealer.presaleService(for: teslaCyberTruck)
+teslaDealer.offerAccessories(from: [snowBrush, tirePump])
